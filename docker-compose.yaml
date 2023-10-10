@@ -1,0 +1,57 @@
+version: '3.0'
+
+services:
+  mongo:
+    image: mongo:6.0.10
+    ports:
+      - "27017:27017"
+    container_name: mongo_container
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+  ffmpeg:
+    image: jrottenberg/ffmpeg:latest
+    container_name: ffmpeg_container 
+  mainserver:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORTNUMBER=8000
+      - WSPORT=3100
+      - MONGO_URL=mongodb+srv://abhimanuemanimalaparambil:6vWGm36d4tzo4o3I@cluster0.xnjfpka.mongodb.net/?retryWrites=true&w=majority
+      - SALT_ROUNDS=10
+      - SESSION_SECRET=1qm2nv3yhalksa0877
+      - JWT_SECRET_KEY = "1q2w3ebvcauuayiyuayu"
+      - NODER_ENV =development
+      - GCLIENTID=434851357455-i2egkudoqbbaqh4jpi35cooe65od9jav.apps.googleusercontent.com
+      - GCLIENTSECRET=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
+      - CALLBACKURLAUTH=http://localhost:8000/auth/google/callback/
+      - MAIL=clubofabhimanue@gmail.com
+      - PASS=wtowedoazweumtqw
+      - CALLBACKURL=http://localhost:8000/users/oauth2callback/
+      - RAZARPAY_KEY_ID=rzp_test_bLt7yzzH20t8v9
+      - RAZARPAY_KEY_SECRET=9f8327fvCnjWCAj0mpp8uNJB
+      - GOOGLEAPIKEY=AIzaSyC8cSFiOVKEeAyYvjJzoPSlSsj_lnnJgas
+      - FACEBOOKID=612376547715798
+      - FACEBOOKAPPSECRET=a44955b43f31938e0964c536de0e0dac
+      - FACEBOOKCLIENTIDTOKEN=dc52d7af3d8e854d71513b488a6855b8
+      - FACEBOOKAUTHREDIRECTURL=http://localhost:8000/users/oauth2callbackfb/
+      - FACEBOOKACCESSTOKEN=EAARiGhCYtmUBO2wIUuUyTKBcZBU3hg4ZAa8JLDssxLkuMAeQt2ZAuPrQQLXowqtm7GqhYGU6KHUEjD5EDUEHrZAFEZCCaZBBrahgPR7gsIrxMEZBZAYMvFPLdIzKJy2zXabBXZBse2050V0jZBZBZCfjlEX7ODXqt0ZBvdLLRCx2WKZAEzVoQuZAt9iMsupobe51u8oOiaXz7ERZCihptsyXOl3qvxwrNnsZBQGMYrQfz0r00VIWDlDpxabvX6yqHZANrwDUscivp5RgZDZD
+      - adminUserName=admin@admin.com
+      - adminPassword=123
+    depends_on:
+      - mongo
+  nginx:
+    image: nginx:latest
+    container_name: nginx_container
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - mainserver
+volumes:
+  mongo_db: {}
